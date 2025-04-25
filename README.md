@@ -43,7 +43,7 @@ rst_p - The signal used to reset the paritygen Module.
 NewData - The signal indicating parity of accumilated bits.
 
 Description:
-We keep getting 1 bit data as input to the block. If reset is not asserted or 32 bits have not been counted we keep accumilating the parity bit with the previous data parity bit. This parity bit will be the output of the block. This value being 1'b0 means we have a Even Parity. If the value is 1'b1 then we have Odd Parity. 
+We keep getting 1 bit data as input to the block. If reset is not asserted or 32 bits have not been counted we keep accumilating the parity bit with the previous data parity bit. This parity bit will be the output of the block. This value being 1'b0 means we have a Even Parity. If the value is 1'b1 then we have Odd Parity. This module uses an 2 bit XOR gate to calculte the parity bit instead of using an 32 bit XOR. This reduces the complexity and Size of Hardware when synthesizing. 
 *********************************************************************************************************************************************************************************************************************************
 UART Receiver
 *********************************************************************************************************************************************************************************************************************************
