@@ -33,6 +33,9 @@ If the parity bit matches we go ahead with transmitting the Stop bit, but if the
 *********************************************************************************************************************************************************************************************************************************
 **Parity Generator(paritygen.v)**
 *********************************************************************************************************************************************************************************************************************************
+
+![UART Block Diagrams-3](https://github.com/user-attachments/assets/9bf96f50-7c5f-4114-8625-3a3e0fe00249)
+
 **Module PINS:**  </br>
 **Parity bit generator(paritygen) Inputs:** 1 bit Data input (ip), A Clock (clk), Reset parity block (rst_p) as inputs to the block. </br>
 **Parity bit generator(paritygen) Output:** Parity output of accumilated data (parity) as output from the block. </br>
