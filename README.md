@@ -3,11 +3,15 @@ Peripherals Repository for Western Semiconductor.**
 *********************************************************************************************************************************************************************************************************************************
 **32 bit Full Duplex Asyunchronous Point to Point Serial UART Communication(16550A).**
 *********************************************************************************************************************************************************************************************************************************
+
 ![UART Block Diagrams-1](https://github.com/user-attachments/assets/55e0b0b8-e673-484f-82ee-99e503f02f9e)
 
 *********************************************************************************************************************************************************************************************************************************
 **UART Transmitter(UART_Tx.v)**
 *********************************************************************************************************************************************************************************************************************************
+
+![UART Block Diagrams-2](https://github.com/user-attachments/assets/be3327b5-1100-4c81-b0aa-ec6c7d2e70c2)
+
 **Module PINS:** </br>
 **UART Transmitter(UART_Tx) Inputs:** 32 bit Data Input (DataIn), A Baud Clock (CLK_Baudin), Reset Transmitter (RstTx) and New Data (NewData) as inputs to the block. </br>
 **UART Transmitter (UART_Tx) Outputs:** Transmitted Data (TransmittedSerialData) and Done Transmission (DoneTx) as output from the block. </br>
