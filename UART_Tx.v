@@ -80,14 +80,14 @@ module UART_Tx(TransmittedSerialData,DoneTx,DataIn,CLK_Baudin,RstTx,NewData,Flag
 					TransmittedSerialData <= 1'b1;
 					STATE <= IDLE ;
 					DoneTx <= 1'b1;
-					Paritygen_rst <= 1'b1;
+					Paritygen_rst <= 1'b0;
 					counter <= 0;
 				end
 				
 				else begin //Returning to IDLE to Resend Data.
 					STATE <= TRANSFER ;
 					DoneTx <= 1'b0;
-					Paritygen_rst <= 1'b1;
+					Paritygen_rst <= 1'b0;
 					counter <= 1;
 				end
 			end
