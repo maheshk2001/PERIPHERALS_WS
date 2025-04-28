@@ -1,18 +1,19 @@
-module UART_Tx(TransmittedSerialData,DataIn,CLK_Baudin,RstTx,NewData); // Module of UART Transmitter.
+module UART_Tx(TransmittedSerialData,DoneTx,DataIn,CLK_Baudin,RstTx,NewData,Flag_in); // Module of UART Transmitter.
 	
-	parameter IDLE = 2'b0, TRANSFER = 2'b01, PARITY = 2'b10;// Coding the States for easy access.
+	parameter IDLE = 2'b00, TRANSFER = 2'b01, PARITY = 2'b10;// Coding the States for easy access.
 	parameter size = 32; // No of Data Bits.
 	
-	input [size-1:0]DataIn; // Data that comes a input to the block is stored here.
+	input [size-1:0]DataIn; // Data that comes as a input to the block is stored here.
 	input CLK_Baudin,RstTx,NewData; // NewData,Baudclk and Reset inputs to block.
+  	input Flag_in;//Flag from receiver.
 	
 	output reg TransmittedSerialData; // The serial Data Transmitted as output of the block.
-	output reg DoneTx;
+	output reg DoneTx; //A register that will be asserted when the transmission is successful.
 	
 	reg [size-1:0]shift; // A register to store intermidiate values and used for shift operation.
 	reg [$clog2(size)+1:0]counter; // Counter to keep track of no of Bits.
-	reg [1:0] STATE; // A register to hold current state values.
-	reg Paritygen_rst;
+	reg [1:0]STATE; // A register to hold current state values.
+	reg Paritygen_rst; // Pin which holds value to reset the parity generation block.
 	
 	wire Parity;//A register to hold Parity value.
 	
@@ -39,7 +40,7 @@ module UART_Tx(TransmittedSerialData,DataIn,CLK_Baudin,RstTx,NewData); // Module
 				counter <= 0;
 				Paritygen_rst <= 1'b1;
 				shift <= {size{1'b0}};
-				if (NewData) // If there is NewData or flag(Parity Bit not matching)then we shift the DataIn into a Reg named shift.
+				if (NewData) // If there is NewData then we shift the DataIn into a Reg named shift.
 				begin
 					Paritygen_rst<=1'b1;
 					shift <= DataIn;
@@ -68,11 +69,14 @@ module UART_Tx(TransmittedSerialData,DataIn,CLK_Baudin,RstTx,NewData); // Module
 				
 				else if (counter == size+1) begin // Transmitting the Parity bit.
 					TransmittedSerialData <= Parity;
-					STATE <= TRANSFER;
+					STATE <= PARITY;
 					counter <= counter + 1 ;
 				end
 				
-				else begin //Transmitting the STOP bit.
+			end
+			
+			PARITY : begin
+				if (Flag_in == 1'b0) begin //Transmitting the STOP bit.
 					TransmittedSerialData <= 1'b1;
 					STATE <= IDLE ;
 					DoneTx <= 1'b1;
@@ -80,11 +84,17 @@ module UART_Tx(TransmittedSerialData,DataIn,CLK_Baudin,RstTx,NewData); // Module
 					counter <= 0;
 				end
 				
+				else begin //Returning to IDLE to Resend Data.
+					STATE <= TRANSFER ;
+					DoneTx <= 1'b0;
+					Paritygen_rst <= 1'b1;
+					counter <= 1;
+				end
 			end
 			
 			default : begin // Default STATE value is to set the FSM to IDLE.
 				STATE <= IDLE;
-				Paritygen_rst<=1'b0;
+				Paritygen_rst<=1'b1;
 			end
 			endcase
 		end
