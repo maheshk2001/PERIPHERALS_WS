@@ -28,9 +28,6 @@ Then we transmit the complete 35 bit data in a serial format with LSB first.
 The Start bit is 1'b0(LOW) for 1 CLK_Baudin cycle and then the Data gets transmitted 1 bit at a time. After the data is transmitted we calculate the parity bit. We transmit the value LOW or HIGH based on Even or Odd Parity respectively. We check the parity in receiver.
 If the parity bit matches we go ahead with transmitting the Stop bit, but if the parity bit dosen't match then we resend the data again.
 
-![test1](https://github.com/user-attachments/assets/0f29a2e7-acc4-4474-b537-c6eb1aeb6ca0)
-
-
 
 *********************************************************************************************************************************************************************************************************************************
 **Parity Generator(paritygen.v)**
