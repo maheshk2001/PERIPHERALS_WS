@@ -49,7 +49,7 @@ This value being 1'b0 means we have a Even Parity.
 If the value is 1'b1 then we have Odd Parity.
 This module uses an 2 bit XOR gate to calculte the parity bit instead of using an 32 bit XOR. This reduces the complexity and Size of Hardware when synthesizing. 
 *********************************************************************************************************************************************************************************************************************************
-**UART Receiver**
+**UART Receiver(UART_Rx.v)**
 *********************************************************************************************************************************************************************************************************************************
 
 
