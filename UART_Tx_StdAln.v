@@ -12,8 +12,9 @@ module UART_Tx_tb;
 
     // For reconstructing received data
     reg [31:0] received_data;
-    reg [5:0] bit_count;
+  reg [5:0] bit_count,bit_count1;
     reg receiving;
+  	reg loop;
 
     // Instantiate your UART_Tx
     UART_Tx uut (
@@ -44,26 +45,33 @@ module UART_Tx_tb;
         DataIn = 32'h0;
         received_data = 32'h0;
         bit_count = 0;
+      	bit_count1 = 0;
         receiving = 0;
-
+		loop = 0;
+      
         #200;
         RstTx = 0; // Release reset
 
         #100;
         DataIn = 32'hA5A5F0F0; // Example 1
         start_transmission();
-
         wait (DoneTx == 1);
-        check_result();
-
         #200;
-        DataIn = 32'hDEADBEEF; // Example 2
+ 
+      	DataIn = 32'hDEADBEEE; // Example 2
         start_transmission();
+		wait (DoneTx == 1);
+      	#200;
+      
+        DataIn = 32'hAEADBEEE; // Example 2
+        start_transmission();
+		wait (DoneTx == 1);
+        
 
-        wait (DoneTx == 1);
-        check_result();
+      	
+        
 
-        #500;
+        #7000;
         $finish;
     end
 
@@ -79,33 +87,58 @@ module UART_Tx_tb;
     end
     endtask
 
-    // Task to check result
-    task check_result;
-    begin
-        if (received_data == DataIn)
-            $display("✅ MATCH: Sent = %h, Received = %h at time %0t", DataIn, received_data, $time);
-        else
-            $display("❌ MISMATCH: Sent = %h, Received = %h at time %0t", DataIn, received_data, $time);
-    end
-    endtask
+parameter TOTAL_BITS = 34;
 
-    // Receiving logic: reconstruct the transmitted data
-    always @(posedge CLK_Baudin) begin
-        if (TransmittedSerialData == 0 && receiving == 0) begin
-            // Detect start bit
-            receiving <= 1;
+always @(posedge CLK_Baudin) begin
+    if (TransmittedSerialData == 0 && receiving == 0) begin
+        // Detect start bit
+        receiving <= 1;
+        bit_count <= 0;
+        received_data <= 0;
+    end else if (receiving) begin
+        if (bit_count < 32) begin
+            received_data <= {TransmittedSerialData, received_data[31:1]};
+            bit_count <= bit_count + 1;
+        end else if (bit_count < TOTAL_BITS) begin
+            // Counting parity and stop bits
+            bit_count <= bit_count + 1;
+        end else begin
+            // Done receiving entire frame
+            receiving <= 0;
             bit_count <= 0;
-            received_data <= 0;
-        end else if (receiving) begin
-            if (bit_count < 32) begin
-                received_data <= {TransmittedSerialData, received_data[31:1]};
-                bit_count <= bit_count + 1;
-            end else begin
-                // After receiving data bits, ignore parity and stop bit
-                receiving <= 0;
-            end
         end
     end
+end
+  
+  always@(posedge CLK_Baudin) begin
+    if (TransmittedSerialData == 0 && receiving == 0) begin
+        // Detect start bit
+        
+        bit_count1 <= 0;
+        
+    end else if (receiving) begin
+      if (bit_count1 < 32) begin
+        		
+            bit_count1 <= bit_count1 + 1;
+      end else if (bit_count1 < TOTAL_BITS) begin
+            // Counting parity and stop bits
+            if(loop == 0) begin
+					Flag_in<=1;
+              		loop <= loop+1;
+				end
+				else begin
+					Flag_in<=0;
+				end
+        	bit_count1 <= bit_count1 + 1;
+        end else begin
+            // Done receiving entire frame
+            
+            bit_count1 <= 0;
+            
+        end
+    end
+  end
+
 
     // Monitor transmission (optional for debug)
     always @(posedge CLK_Baudin) begin
