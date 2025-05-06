@@ -1,3 +1,4 @@
+
 // Code your design here
 module UART_Tx(TransmittedSerialData,DoneTx,DataIn,CLK_Baudin,RstTx,NewData,Flag_in); // Module of UART Transmitter.
 	
@@ -41,15 +42,13 @@ module UART_Tx(TransmittedSerialData,DoneTx,DataIn,CLK_Baudin,RstTx,NewData,Flag
 		begin
 			case(STATE)
 			IDLE : begin // IDLE State defnition is similar to reset. We remain in IDLE until NewData is asserted.
-				TransmittedSerialData <= 1'b1;
-				counter <= 0;
-				Paritygen_rst <= 1'b1;
-				shift <= {size{1'b0}};
+				
 				
               	if (ReTransmit) begin // If flag we retransmit the data we saved in buffer.
                 	Paritygen_rst<=1'b1;
                 	shift <= DataBuffer;
                 	STATE <= TRANSFER;
+					counter <= 1;
                 	
               	end
               
@@ -63,6 +62,10 @@ module UART_Tx(TransmittedSerialData,DoneTx,DataIn,CLK_Baudin,RstTx,NewData,Flag
               
 				else begin // Until NewData is asserted we wait for the data in IDLE state.
 					STATE <= IDLE;
+					TransmittedSerialData <= 1'b1;
+					counter <= 0;
+					Paritygen_rst <= 1'b1;
+					shift <= {size{1'b0}};
 				end
 			end
 			
@@ -85,9 +88,13 @@ module UART_Tx(TransmittedSerialData,DoneTx,DataIn,CLK_Baudin,RstTx,NewData,Flag
 				
 				else if (counter == size+1) begin // Transmitting the Parity bit.
 					TransmittedSerialData <= Parity;
-					STATE <= PARITY;
+					STATE <= TRANSFER;
 					counter <= counter + 1 ;
 				end
+              
+              	else begin
+                  	STATE <= PARITY;
+                end
 				
 			end
 			
@@ -100,7 +107,7 @@ module UART_Tx(TransmittedSerialData,DoneTx,DataIn,CLK_Baudin,RstTx,NewData,Flag
 					Paritygen_rst <= 1'b0;
 					counter <= 0;
                   	ReTransmit <=1'b0;
-                  DataBuffer <= {size{1'b0}};
+                  	DataBuffer <= {size{1'b0}};
 				end
 				
 				else begin //Returning to IDLE to Resend Data.
