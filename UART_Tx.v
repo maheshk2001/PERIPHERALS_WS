@@ -1,7 +1,7 @@
 module UART_Tx(TransmittedSerialData,DoneTx,DataIn,CLK_Baudin,RstTx,NewData,Flag_in); // Module of UART Transmitter.
 	
-	parameter IDLE = 2'b00, TRANSFER = 2'b01, PARITY = 2'b10;// Coding the States for easy access.
-	parameter size = 32; // No of Data Bits.
+	localparam IDLE = 2'b00, TRANSFER = 2'b01, PARITY = 2'b10;// Coding the States for easy access.
+	localparam size = 32; // No of Data Bits.
 	
 	input [size-1:0]DataIn; // Data that comes as a input to the block is stored here.
 	input CLK_Baudin,RstTx,NewData; // NewData,Baudclk and Reset inputs to block.
