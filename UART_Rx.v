@@ -18,7 +18,7 @@ module UART_Rx(DataOut, DoneRx, SerialInputData, CLK_Baudin, RstRx, Flag_Rx, Don
 	
 	wire Parity_Rx;
 	
-  paritygen parity2 (.ip(shift_reg[0]),
+  	paritygen parity2 (.ip(shift_reg[0]),
 						.clk(CLK_Baudin),
 						.rst_p(Paritygen_rstR),
 						.parity(Parity_Rx)); // Instantiating the parity generator module for parity bit generation. 
